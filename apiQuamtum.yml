@@ -1,0 +1,1765 @@
+openapi: 3.0.0
+info:
+  title: API QUAMTUM
+  description: |
+    API encargado de gestionar el acceso y gestión de información del equipo QUAMTUM así como a su respectivo software.
+
+    ## Código Sistema Operativo Dispositivo:
+    En la actualidad existe un listado asignado para identificar el SO del dispositivo que está realizando las diferentes consultas a los endpoint.
+    * `SO Windows: 1`
+    * `SO Mac: 2`
+    * `SO Linux: 3`
+    * `SO Android: 4`
+    * `SO Iphone: 5`
+    * `SO Harmony: 6`
+    * `SO Embebido: 7`
+    
+    Para el caso del realizar consultas desde el dispositivo (Quamtum Portable) se utilizara como SO = 7 (SO Embebido), esto con la finalidad de reconocer que las consultas son realizadas desde el dispositivo.
+    
+    ## Autenticación mediante JWT
+    Esta API utiliza la Autenticación JWT (JSON Web Token), la cual se obtendrá mediante el inicio de sesión en un endpoint específico (Login).
+    
+    Este JWT sera enviado en las consultas a los diferentes endpoints mediante los Headers, de la siguiente manera:
+    
+    `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…`
+            
+    ## Cookie
+    Este Header se enviará cuando las consultas a los endpoints son realizadas desde el software de escritorio (Quamtum Desktop) y desde el dispositivo (Quamtum Portable).
+    
+    Se enviará en los Headers, de la siguiente manera:
+
+    `Cookie: info_dispositivo={"codigo_dispositivo":"COD_UID_DISPOSITIVO","so_dispositivo":1}`
+
+    La información de la Cookie corresponde a el Código Único Identificador del Dispositivo/Desktop y al SO del Dispositivo/Desktop
+    
+    ## Destinatario de Endpoints
+    Los endpoints están diseñados para ser utilizados en la aplicación de escritorio (Quamtum Desktop), aplicación web (Quamtum Web) y en la aplicación del dispositivo (Quamtum Portable). Es importante distinguir entre ellos para garantizar una integración adecuada.
+
+    Para poder determinar el endpoint que necesito consultar dependiendo de la aplicacion que estoy implementando, se agrego palabras identificadoras a los endpoint.
+    * `/device`: para identificar que son endpoints para la aplicación del dispositivo (Quamtum Portable).
+    
+      Ejm: `https://dev-api.nextdet.com/v1/quamtum/device/...`
+    * `/desktop`: para identificar que son endpoints para la aplicación de escritorio (Quamtum Desktop).
+    
+      Ejm: `https://dev-api.nextdet.com/v1/quamtum/desktop/...`
+    * `/web`: para identificar que son endpoints para la aplicación web (Quamtum Web).
+    
+      Ejm: `https://dev-api.nextdet.com/v1/quamtum/web/...`
+  version: 1.0.0
+servers:
+  - url: https://dev-api.nextdet.com
+    description: Url de desarrollo
+  - url: https://api.nextdet.com
+    description: Url de produccion
+
+  
+  
+tags:
+  - name: Login
+    description: Inicios de sesión
+  - name: Logout
+    description: Cierres de sesión
+  - name: Password
+    description: Cambios de contraseña
+  - name: Configuracion
+    description: Configuración inicial
+  - name: Proyecto
+    description: Gestión de proyectos
+  - name: Analisis
+    description: Gestión de los análisis de los proyectos
+  - name: Actualizaciones
+    description: Gestión de las actualizaciones del software
+  - name: Visualizar Imagenes
+    description: Vizualización de imagenes
+  - name: Descargar Zip
+    description: Descarga de archivo zip
+  - name: Descargar Actualizaciones
+    description: Descarga de actualzaciones
+    
+paths:
+
+  /v1/quamtum/device/login:
+    get:
+      tags: 
+        - Login
+      operationId: loginQuamtumDevice
+      description: Permite al usuario iniciar sesión en Quamtum Portable.
+      parameters: 
+        - in: query
+          name: correo
+          description: Correo del usuario con el que se le registró su cuenta.
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: Contraseña de la cuenta.
+          schema:
+            type: string
+        - in: query
+          name: so_dispositivo
+          description: Sistema operativo del dispositivo, como es un login desde el dispositivo el valor debe de ser 7 (SO Embebido).
+          schema:
+            type: integer
+        - in: query
+          name: codigo_dispositivo 
+          description: Código de Identificación Único del dispositivo.
+          schema:
+            type: string
+        - in: query
+          name: version_app 
+          description: Versión del software del dispositivo.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                      email:
+                        type: string
+                        example: correo@correo.com
+                      licencia_fin:
+                        type: string
+                        example: 2024-06-20
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+  
+  /v1/quamtum/desktop/login:
+    get:
+      tags: 
+        - Login
+      operationId: loginQuamtumDesktop
+      description: Permite al usuario iniciar sesión en Quamtum Desktop.
+      parameters: 
+        - in: query
+          name: correo
+          description: Correo del usuario con el que se le registró su cuenta.
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: Contraseña de la cuenta.
+          schema:
+            type: string
+        - in: query
+          name: so_dispositivo
+          description: Sistema operativo del dispositivo.
+          schema:
+            type: integer
+        - in: query
+          name: codigo_dispositivo 
+          description: Código de Identificación Único del dispositivo.
+          schema:
+            type: string
+        - in: query
+          name: version_app 
+          description: Versión del software del dispositivo.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                      email:
+                        type: string
+                        example: correo@correo.com
+                      licencia_fin:
+                        type: string
+                        example: 2024-06-20
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+  /v1/quamtum/web/login:
+    post:
+      tags: 
+        - Login
+      operationId: loginQuamtumWeb
+      description: Permite al usuario iniciar sesión en Quamtum Web.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - email
+                - password
+                - recaptchaValue
+              properties:
+                email:
+                  type: string
+                  description: Correo del usuario 
+                  example: 'correo@correo.com'
+                password:
+                  type: string
+                  description: Contraseña de la cuenta de usuario 
+                  example: '123'
+                recaptchaValue:
+                  type: string
+                  description: Token de seguridad para determinar si el usuario no es un bot.
+                  example: 'd290f1ee-6c54-4b01-90e6-d701748f085'
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                      email:
+                        type: string
+                        example: correo@correo.com
+                      licencia_fin:
+                        type: string
+                        example: 2024-06-20
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
+  /v1/quamtum/device/logout:
+    get:
+      tags: 
+        - Logout
+      operationId: logoutQuamtumDevice
+      description: Permite al usuario cerrar sesión en Quamtum Portable.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+  
+  /v1/quamtum/desktop/logout:
+    get:
+      tags: 
+        - Logout
+      operationId: logoutQuamtumDesktop
+      description: Permite al usuario cerrar sesión en Quamtum Desktop.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+  /v1/quamtum/web/logout:
+    get:
+      tags: 
+        - Logout
+      operationId: logoutQuamtumWeb
+      description: Permite al usuario cerrar sesión en Quamtum Web.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
+  /v1/quamtum/desktop/change/password:
+    post:
+      tags: 
+        - Password
+      operationId: changePasswordQuamtumDesktop
+      description: Permite al usuario cambiar su contraseña desde Quamtum Desktop.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - password_old 
+                - password_new 
+              properties:
+                password_old:
+                  type: string
+                  description: Contraseña anterior que sera reemplazada.
+                  example: 'Password1234@Old'
+                password_new :
+                  type: string
+                  description: Constraseña nueva que desea cambiar.
+                  example: 'Password1234@New'
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+  /v1/quamtum/web/change/password:
+    post:
+      tags: 
+        - Password
+      operationId: changePasswordQuamtumWeb
+      description: Permite al usuario cambiar su contraseña desde Quamtum Web.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - password_old 
+                - password_new 
+              properties:
+                password_old:
+                  type: string
+                  description: Contraseña anterior que sera reemplazada.
+                  example: 'Password1234@Old'
+                password_new :
+                  type: string
+                  description: Constraseña nueva que desea cambiar.
+                  example: 'Password1234@New'
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+
+  /v1/quamtum/desktop/configuracion/list/usuario:
+    get:
+      tags: 
+        - Configuracion
+      operationId: configuracionQuamtumDesktop
+      description: Permite al usuario obtener la información de su configuración en Quamtum Desktop.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    $ref: '#/components/schemas/Configuracion'
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+  
+  /v1/quamtum/desktop/configuracion/save:
+    post:
+      tags: 
+        - Configuracion
+      operationId: saveConfiguracionQuamtumDesktop
+      description: Permite al usuario guardar/actualizar su configuracion desde Quamtum Desktop.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - tipoclasificacion_id 
+                - unidad_id
+                - profundida_minima
+                - profundidad_maxima
+                - color_fino
+                - color_optimo
+                - color_grueso
+                - rango_fino
+                - rango_grueso
+                - percentil_id
+                - kuzram
+                - lenguaje_id
+                - opacidad
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                usuario_id:
+                  type: integer
+                  example: 1
+                tipoclasificacion_id:
+                  type: integer
+                  example: 1
+                unidad_id:
+                  type: integer
+                  example: 1
+                profundidad_minima:
+                  type: number
+                  format: double
+                  example: 40
+                profundidad_maxima:
+                  type: number
+                  format: double
+                  example: 400
+                color_fino:
+                  type: string
+                  example: "#034958"
+                color_optimo:
+                  type: string
+                  example: "#489103"
+                color_grueso:
+                  type: string
+                  example: "#009284"
+                rango_fino:
+                  type: number
+                  format: double
+                  example: 2.4
+                rango_grueso:
+                  type: number
+                  format: double
+                  example: 10.0
+                percentil_id:
+                  type: integer
+                  example: 1
+                kuzram:
+                  type: integer
+                  example: 0
+                lenguaje_id:
+                  type: integer
+                  example: 1
+                opacidad:
+                  type: number
+                  format: double
+                  example: 50
+                estado:
+                  type: integer
+                  example: 1
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+  /v1/quamtum/web/configuracion/list/usuario:
+    get:
+      tags: 
+        - Configuracion
+      operationId: configuracionQuamtumWeb
+      description: Permite al usuario obtener la información de su configuración en Quamtum Web.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    $ref: '#/components/schemas/Configuracion'
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+  
+  /v1/quamtum/web/configuracion/save:
+    post:
+      tags: 
+        - Configuracion
+      operationId: saveConfiguracionQuamtumWeb
+      description: Permite al usuario guardar/actualizar su configuracion desde Quamtum Web.
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - tipoclasificacion_id 
+                - unidad_id
+                - profundida_minima
+                - profundidad_maxima
+                - color_fino
+                - color_optimo
+                - color_grueso
+                - rango_fino
+                - rango_grueso
+                - percentil_id
+                - kuzram
+                - lenguaje_id
+                - opacidad
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                usuario_id:
+                  type: integer
+                  example: 1
+                tipoclasificacion_id:
+                  type: integer
+                  example: 1
+                unidad_id:
+                  type: integer
+                  example: 1
+                profundidad_minima:
+                  type: number
+                  format: double
+                  example: 40
+                profundidad_maxima:
+                  type: number
+                  format: double
+                  example: 400
+                color_fino:
+                  type: string
+                  example: "#034958"
+                color_optimo:
+                  type: string
+                  example: "#489103"
+                color_grueso:
+                  type: string
+                  example: "#009284"
+                rango_fino:
+                  type: number
+                  format: double
+                  example: 2.4
+                rango_grueso:
+                  type: number
+                  format: double
+                  example: 10.0
+                percentil_id:
+                  type: integer
+                  example: 1
+                kuzram:
+                  type: integer
+                  example: 0
+                lenguaje_id:
+                  type: integer
+                  example: 1
+                opacidad:
+                  type: number
+                  format: double
+                  example: 50
+                estado:
+                  type: integer
+                  example: 1
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+
+  /v1/quamtum/device/proyecto/save:
+    post:
+      tags: 
+        - Proyecto
+      operationId: saveProyectoQuamtumDevice
+      description: Permite al usuario subir los archivos generados por la Quamtum Portable a la nube.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - proyecto_nombre 
+                - proyecto_fecha
+                - files_nombre 
+                - files_fecha 
+                - files
+              properties:
+                proyecto_uid:
+                  type: string
+                  example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                proyecto_nombre:
+                  type: string
+                  example: "PROYECTO 1"
+                proyecto_fecha:
+                  type: string
+                  example: "2024-03-23 21:26:44"
+                files_nombre:
+                  type: string
+                  example: "2024_03_31_10_00_00"
+                files_fecha:
+                  type: string
+                  format: binary
+                  example: Binary
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      proyecto_uid:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                      files_iud:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+  /v1/quamtum/device/proyecto/rename:
+    post:
+      tags: 
+        - Proyecto
+      operationId: renameProyectoQuamtumDevice
+      description: Permite al usuario subir los archivos generados por la Quamtum Portable a la nube.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - proyecto_uid
+                - proyecto_nombre 
+              properties:
+                proyecto_uid:
+                  type: string
+                  example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                proyecto_nombre:
+                  type: string
+                  example: "PROYECTO 1 renamed"
+                proyecto_fecha:
+                  type: string
+                  example: "2024-03-23 21:26:44"
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      proyecto_uid:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                      files_iud:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
+  /v1/quamtum/desktop/proyecto/list/usuario:
+    get:
+      tags: 
+        - Proyecto
+      operationId: listProyectoQuamtumDesktop
+      description: Permite al usuario obtener un listado de los proyectos subidos desde la Quamtum Portable en la nube, en un rango de fecha.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        uid:
+                          type: string
+                          example: "98ae99f2-6df0-44a8-b989-0f507265820ea1"
+                        nombre:
+                          type: string
+                          example: "PROYECTO 1"
+                        fecha_proyecto:
+                          type: string
+                          example: "2024-03-23 21:26:44"
+                        empresa_nombre:
+                          type: string
+                          example: "Nextdet"
+                        analisis:
+                          type: integer
+                          example: 2
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+                    
+  /v1/quamtum/desktop/proyecto/download:
+    get:
+      tags: 
+        - Proyecto
+      operationId: downloadProyectoQuamtumDesktop
+      description: Permite al usuario generar una URL de descarga en el cual se encuentran los archivos subidos desde Quamtum Portable pertenecientes a un proyecto en especifico. Este url descargar un archivo ZIP.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        uid:
+                          type: string
+                          example: "98ae99f2-6df0-44a8-b989-0f507265820ea1"
+                        nombre:
+                          type: string
+                          example: "PROYECTO 1"
+                        fecha_proyecto:
+                          type: string
+                          example: "2024-03-23 21:26:44"
+                        empresa_nombre:
+                          type: string
+                          example: "Nextdet"
+                        analisis:
+                          type: integer
+                          example: 2
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+  /v1/quamtum/web/proyecto/list/usuario:
+    get:
+      tags: 
+        - Proyecto
+      operationId: listProyectoQuamtumWeb
+      description: Permite al usuario obtener un listado de los proyectos subidos desde la Quamtum Portable en la nube, en un rango de fecha.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        uid:
+                          type: string
+                          example: "98ae99f2-6df0-44a8-b989-0f507265820ea1"
+                        nombre:
+                          type: string
+                          example: "PROYECTO 1"
+                        fecha_proyecto:
+                          type: string
+                          example: "2024-03-23 21:26:44"
+                        empresa_nombre:
+                          type: string
+                          example: "Nextdet"
+                        analisis:
+                          type: integer
+                          example: 2
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
+  /v1/quamtum/desktop/proyecto/analisis/list:
+    get:
+      tags: 
+        - Analisis
+      operationId: listAnalisisQuamtumDesktop
+      description: Permite al usuario obtener un listado de los analisis de un proyectos subido desde la Quamtum Portable en la nube.
+      parameters:
+        - in: query
+          name: proyecto_uid
+          description: Identificador del proyecto de Quamtum.
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        files_uid:
+                          type: string
+                          example: "7f2029c8-0f49-4efb-955e-374761758c5f"
+                        nombre:
+                          type: string
+                          example: "06-02-2024_00-24-22"
+                        fecha:
+                          type: string
+                          example: "2024-03-23 21:26:44"
+                        url_img:
+                          type: string
+                          example: "files/view/image?module=4f6dd10b-2431-44f3-aa00-fac88814553d&code=1&view=7f2029c8-0f49-4efb-955e-374761758c5f&name=06-02-2024_00-24-22.jpg"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+  /v1/quamtum/desktop/proyecto/analisis/download:
+    get:
+      tags: 
+        - Analisis
+      operationId: downloadAnalisisQuamtumDesktop
+      description: Permite al usuario generar una URL de descarga en el cual se encuentran los archivos subidos desde Quamtum Portable pertenecientes a un analisis (foto) en especifico. Este url descargar un archivo ZIP.
+      parameters:
+        - in: query
+          name: proyecto_uid
+          description: Identificador del proyecto de Quamtum.
+          schema:
+            type: string
+        - in: query
+          name: files_uid
+          description: Identificador del analisis (foto) tomada desde Quamtum.
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        url_file:
+                          type: string
+                          example: "files/download/zip?module=4f6dd10b-2431-44f3-aa00-fac88814553d&code=0&download=bf9f53cd7005c16da990868227b995d0&file_name=232a8ed1b5085e54f9fe0b1febf2f3f6.zip&name=QUAMTUM_06-02-2024_00-24-22.zip"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
+  /instalador/quamtum/device/software:
+    get:
+      tags: 
+        - Actualizaciones
+      operationId: downloadInstaladorQuamtumDevice
+      description: Permite al usuario generar una URL de descarga en el cual se encuentran los archivos subidos desde Quamtum Portable pertenecientes a un analisis (foto) en especifico. Este url descargar un archivo ZIP.
+      parameters:
+        - in: query
+          name: codigo_dispositivo
+          description: Código Unido Identificador del dispositivo
+          schema:
+            type: string
+        - in: query
+          name: version_app
+          description: Version del software instalada en el dispositivo.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        url_file:
+                          type: string
+                          example: "files/download/zip?module=873a38eb-1b9d-4181-bec8-b4115b74b4aa&module_code=10001&type=10&folder=software&v=1&code=1&download=f13de6dfaf30cb5ab23bd52c48dfcc58&name=Quamtum.zip"
+        201:
+          description: En caso el estado de la respuesta de este endpoint sea “OK_NOTI” no se realizara el proceso de descarga del archivo ya que este mensaje solo sucede cuando el dispositivo tiene la ultima version disponible instalada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK_NOTI
+                  mensaje:
+                    type: string
+                    example: Su version esta actualizada.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
+  /quamtum/desktop/{url_img}&codigo_dispositivo={codigo_dispositivo}&so_dispositivo={so_dispositivo}&token={token}:
+    get:
+      tags: 
+        - Visualizar Imagenes
+      operationId: vizualizarImagenesQuamtumDesktop
+      description: Permite al usuario visualizar las imagenes de los analisis (foto) de los proyectos Quamtum Portable.
+      parameters:
+        - in: path
+          required: true
+          name: url_img
+          description: Url de la imagen
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: codigo_dispositivo
+          description: Código Unido Identificador del dispositivo
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: so_dispositivo 
+          description: SO del dispositivo.
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: token
+          description: JWT para identificar al usuario que esta visualizando los analisis (fotos). 
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+
+
+  /quamtum/desktop/{url_file}&codigo_dispositivo={codigo_dispositivo}&so_dispositivo={so_dispositivo}&token={token}:
+    get:
+      tags: 
+        - Descargar Zip
+      operationId: descargarZipQuamtumDesktop
+      description: Permite al usuario decargar archivos ZIP con la información solicitada de los análisis (fotos) que se han subido desde la Quamtum Portable.
+      parameters:
+        - in: path
+          required: true
+          name: url_file
+          description: Url del archivo
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: codigo_dispositivo
+          description: Código Unido Identificador del dispositivo
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: so_dispositivo 
+          description: SO del dispositivo.
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: token
+          description: JWT para identificar al usuario que esta visualizando los analisis (fotos). 
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+                    
+  
+  /quamtum/device/{url_file}&codigo_dispositivo={codigo_dispositivo}&so_dispositivo={so_dispositivo}:
+    get:
+      tags: 
+        - Descargar Actualizaciones
+      operationId: descargarActualizacionesQuamtumDevice
+      description: Permite descargar actualizaciones del software Quamtum para el dispositivo Quamtum Portable, estas actualizaciones estan comprimidas en un archivo ZIP.
+      parameters:
+        - in: path
+          required: true
+          name: url_file
+          description: Url del archivo
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: codigo_dispositivo
+          description: Código Unido Identificador del dispositivo
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: so_dispositivo 
+          description: SO del dispositivo.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+
+
+components:
+  schemas:
+  
+    Configuracion: 
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        usuario_id:
+          type: integer
+          example: 1
+        tipoclasificacion_id:
+          type: integer
+          example: 1
+        unidad_id:
+          type: integer
+          example: 1
+        profundidad_minima:
+          type: number
+          format: double
+          example: 40
+        profundidad_maxima:
+          type: number
+          format: double
+          example: 400
+        color_fino:
+          type: string
+          example: "#034958"
+        color_optimo:
+          type: string
+          example: "#489103"
+        color_grueso:
+          type: string
+          example: "#009284"
+        rango_fino:
+          type: number
+          format: double
+          example: 2.4
+        rango_grueso:
+          type: number
+          format: double
+          example: 10.0
+        percentil_id:
+          type: integer
+          example: 1
+        kuzram:
+          type: integer
+          example: 0
+        lenguaje_id:
+          type: integer
+          example: 1
+        opacidad:
+          type: number
+          format: double
+          example: 50
+        estado:
+          type: integer
+          example: 1
+
+    TipoError: 
+      description: |  
+        Cuando se produce un error en las consultas este se reportan con los siguientes valores: 
+        
+        * `-1 -> TRY CATCH ->` son errores controlados que se producen en la logica de negocio
+        
+        * `0  -> SIN ERROR ->` no se produce algun error, la consulta fue exitosa
+        
+        * `1  -> NOT USER ->` este error se produce cuando no se logra identificar al usuario que ha iniciado                      sesion en alguno de los productos y/o servicios (Nextlion, Quamtum, Quamtum 360)
+        
+        * `2  -> DDBB ->` este error se produce cuando ocurre algun inconveniente al realizar alguna                           consulta en la base de datos
+          
+        * `4  -> DATA INVALIDA ->` este error se produce cuando los datos no pasan por alguna validacion en la                          logica de negocio
+        
+        * `5  -> SIN VIGENCIA ->` este error se produce cuando un usuario quiere loguearse algun producto y/o                          servicio pero no tiene una licencia vigente para dicho producto
+        
+        * `6  -> NOT AUTH ->` este error se produce cuando no se pudo determinar la valides del JWT
+        
+        * `7  -> TOKEN EXP ->` este error se produce cuando el JWT ha expirado su vigencia
+        
+        * `10 -> NOT ENDPOINT ->` este error se produce cuando se realiza una consutla a una url que no existe o esta habilitada
+    
+    
+    ValoresEstado: 
+      description: |  
+        Listado de estados que pueden tomar los datos que llegan por medio del API: 
+        
+        * `-1 ->` Custom     -> es un estado que no se encuentra en la BBDD, se utiliza para indicar un estado que no ha sido incluido en la BBDD del listado de estados. Por ejemplo en el caso de Cotizacion indica que toda cotizacion con este estado esta "Sin Vigencia" 
+        
+        * `0  ->` Eliminado
+        
+        * `1  ->` Activo
+        
+        * `2  ->` Bloqueado
+          
+        * `3  ->` Historico
+        
+        * `4  ->` Finalizado
+        
+        * `5  ->` Inactivo
+        
+    
+        
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    Cookie:
+      type: apiKey
+      name: info_dispositivo
+      in: cookie
