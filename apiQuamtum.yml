@@ -972,6 +972,9 @@ paths:
                   example: "2024_03_31_10_00_00"
                 files_fecha:
                   type: string
+                  example: "2024-03-31 10:00:00"
+                files:
+                  type: string
                   format: binary
                   example: Binary
       responses:
