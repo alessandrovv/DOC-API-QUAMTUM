@@ -1187,21 +1187,9 @@ paths:
                     type: array
                     items:
                       properties:
-                        uid:
+                        url_file:
                           type: string
-                          example: "98ae99f2-6df0-44a8-b989-0f507265820ea1"
-                        nombre:
-                          type: string
-                          example: "PROYECTO 1"
-                        fecha_proyecto:
-                          type: string
-                          example: "2024-03-23 21:26:44"
-                        empresa_nombre:
-                          type: string
-                          example: "Nextdet"
-                        analisis:
-                          type: integer
-                          example: 2
+                          example: "files/download/zip?module=4f6dd10b-2431-44f3-aa00-fac88814553d&code=0&download=bf9f53cd7005c16da990868227b995d0&file_name=232a8ed1b5085e54f9fe0b1febf2f3f6.zip&name=QUAMTUM_06-02-2024_00-24-22.zip"
         404:
           description: "Peticion no ejecutada."
           content:
