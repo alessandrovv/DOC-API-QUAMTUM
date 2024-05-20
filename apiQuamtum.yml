@@ -1098,6 +1098,17 @@ paths:
         - Proyecto
       operationId: listProyectoQuamtumDesktop
       description: Permite al usuario obtener un listado de los proyectos subidos desde la Quamtum Portable en la nube, en un rango de fecha.
+      parameters:
+        - in: query
+          name: fecha_desde
+          description: Fecha de inicio para obtener los datos del listado [yyyy-MM-DD].
+          schema:
+            type: string
+        - in: query
+          name: fecha_hasta
+          description: Fecha final para obtener los datos del listado [yyyy-MM-DD].
+          schema:
+            type: string
       security:
         - BearerAuth: []
         - Cookie: []
@@ -1163,6 +1174,12 @@ paths:
         - Proyecto
       operationId: downloadProyectoQuamtumDesktop
       description: Permite al usuario generar una URL de descarga en el cual se encuentran los archivos subidos desde Quamtum Portable pertenecientes a un proyecto en especifico. Este url descargar un archivo ZIP.
+      parameters:
+        - in: query
+          name: proyecto_uid
+          description: Identificador del proyecto de Quamtum
+          schema:
+            type: string
       security:
         - BearerAuth: []
         - Cookie: []
@@ -1216,6 +1233,17 @@ paths:
         - Proyecto
       operationId: listProyectoQuamtumWeb
       description: Permite al usuario obtener un listado de los proyectos subidos desde la Quamtum Portable en la nube, en un rango de fecha.
+      parameters:
+        - in: query
+          name: fecha_desde
+          description: Fecha de inicio para obtener los datos del listado [yyyy-MM-DD].
+          schema:
+            type: string
+        - in: query
+          name: fecha_hasta
+          description: Fecha final para obtener los datos del listado [yyyy-MM-DD].
+          schema:
+            type: string
       security:
         - BearerAuth: []
       responses:
