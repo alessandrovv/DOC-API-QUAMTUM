@@ -1435,6 +1435,99 @@ paths:
                     type: object
                     example: []
 
+  /v1/quamtum/web/proyecto/analisis/list:
+    get:
+      tags: 
+        - Analisis
+      operationId: listAnalisisQuamtumWeb
+      description: Permite al usuario obtener un listado de los analisis de un proyectos subido desde la Quamtum Portable en la nube.
+      parameters:
+        - in: query
+          name: proyecto_uid
+          description: Identificador del proyecto de Quamtum.
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: array
+                    items:
+                      properties:
+                        files_uid:
+                          type: string
+                          example: "7f2029c8-0f49-4efb-955e-374761758c5f"
+                        nombre:
+                          type: string
+                          example: "06-02-2024_00-24-22"
+                        fecha:
+                          type: string
+                          example: "2024-03-23 21:26:44"
+                        url_img:
+                          type: string
+                          example: "files/view/image?module=4f6dd10b-2431-44f3-aa00-fac88814553d&code=1&view=7f2029c8-0f49-4efb-955e-374761758c5f&name=06-02-2024_00-24-22.jpg"
+                        analisis:
+                          type: object
+                          properties:
+                            workzone:
+                              example: [[221,124],[1987,124],[1987,1118],[221,1118]]
+                            shapes:
+                              type: array
+                              items:
+                                properties:
+                                  type:
+                                    example: polygon
+                                  points:
+                                    example: [[1285,790],[1261,770],[1217,766],[1154,775],...]
+                                  area:
+                                    example: 7316.563736122036
+                                  length:
+                                    example: 136.155242041223
+                                  depth:
+                                    example: 1610.10009765625
+                            lengths_ptotal:
+                              example: [42.75, 56.2037037037037, 83.89814814814815,...]
+                            areas_ptotal: 
+                              example: [14, 19.203703703703702, 25.89814814814815, ...]
+
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+
 
   /instalador/quamtum/device/software:
     get:
