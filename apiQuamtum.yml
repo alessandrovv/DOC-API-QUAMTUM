@@ -1502,6 +1502,8 @@ paths:
                                     example: 136.155242041223
                                   depth:
                                     example: 1610.10009765625
+                                  color_id:
+                                    exameple: 3
                             lengths_ptotal:
                               example: [42.75, 56.2037037037037, 83.89814814814815,...]
                             areas_ptotal: 
