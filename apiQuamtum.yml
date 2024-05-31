@@ -1503,12 +1503,88 @@ paths:
                                   depth:
                                     example: 1610.10009765625
                                   color_id:
-                                    exameple: 3
+                                    example: 3
                             lengths_ptotal:
                               example: [42.75, 56.2037037037037, 83.89814814814815,...]
                             areas_ptotal: 
                               example: [14, 19.203703703703702, 25.89814814814815, ...]
 
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
+
+  /v1/quamtum/web/proyecto/analisis/list/poligono:
+    post:
+      tags: 
+        - Analisis
+      operationId: listAnalisisPoligonoQuamtumWeb
+      description: Permite al usuario obtener el analisis de un poligono modificado.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - files_uid 
+                - puntos
+                - puntos_posicion
+              properties:
+                files_uid:
+                  type: string
+                  example: "79d2bf3d-92ab-48ed-9b07-121d98a3bec3"
+                puntos:
+                  example: [[1285,790],[1261,770],[1217,766],[1154,775],...]
+                puntos_posicion:
+                  type: integer
+                  description: Hace referencia a la posición de los puntos del poligono dentro del arreglo de poligonos del analisis
+                  example: 0
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      area:
+                        example: 7316.563736122036
+                      length:
+                        example: 136.155242041223
+                      depth:
+                        example: 1610.10009765625
+                      color_id:
+                        example: 3
         404:
           description: "Peticion no ejecutada."
           content:
