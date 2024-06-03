@@ -1740,7 +1740,7 @@ paths:
                     type: object
                     example: []
 
-  /quamtum/web/{url_img}:
+  /quamtum/web/{url_img}&token={token}:
     get:
       tags: 
         - Visualizar Imagenes
@@ -1751,6 +1751,12 @@ paths:
           required: true
           name: url_img
           description: Url de la imagen
+          schema:
+            type: string
+        - in: path
+          required: true
+          name: token
+          description: JWT para identificar al usuario que esta visualizando los analisis (fotos). 
           schema:
             type: string
       responses:
