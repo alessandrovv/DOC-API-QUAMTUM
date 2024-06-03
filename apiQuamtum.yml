@@ -1740,7 +1740,7 @@ paths:
                     type: object
                     example: []
 
-  /quamtum/desktop/{url_img}:
+  /quamtum/web/{url_img}:
     get:
       tags: 
         - Visualizar Imagenes
