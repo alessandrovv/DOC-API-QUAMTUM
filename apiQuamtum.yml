@@ -1508,6 +1508,19 @@ paths:
                               example: [42.75, 56.2037037037037, 83.89814814814815,...]
                             areas_ptotal: 
                               example: [14, 19.203703703703702, 25.89814814814815, ...]
+                            tapes:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  pixelA:
+                                    example: [45,150]
+                                  pixelB:
+                                    example: [180,65]
+                                  distancia_mm:
+                                    example: 635.9511479475383
+                                  text:
+                                    example: "635.95 mm"
 
         404:
           description: "Peticion no ejecutada."
@@ -1605,7 +1618,186 @@ paths:
                     type: object
                     example: []
 
+  /v1/quamtum/web/proyecto/analisis/list/cinta_metrica:
+    post:
+      tags: 
+        - Analisis
+      operationId: listAnalisisCintaMetricaQuamtumWeb
+      description: Permite al usuario obtener el analisis de una cinta métrica.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - files_uid 
+                - pixelA
+                - pixelB
+              properties:
+                files_uid:
+                  type: string
+                  example: "79d2bf3d-92ab-48ed-9b07-121d98a3bec3"
+                pixelA:
+                  example: [45,150]
+                pixelB:
+                  example: [180,65]
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      pixelA:
+                        example: [45,150]
+                      pixelB:
+                        example: [180,65]
+                      distancia_mm:
+                        example: 635.9511479475383
+                      text:
+                        example: "635.95 mm"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
 
+  /v1/quamtum/web/proyecto/analisis/save:
+    post:
+      tags: 
+        - Analisis
+      operationId: saveAnalisisQuamtumWeb
+      description: Permite al usuario guardar un listado de analisis.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - proyecto_analisis 
+              properties:
+                proyecto_analisis:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      files_uid: 
+                        type: string
+                        example: "79d2bf3d-92ab-48ed-9b07-121d98a3bec3"
+                      estado: 
+                        type: integer
+                        example: 1
+                      analisis:
+                        type: object
+                        properties:
+                          workzone:
+                            example: [[221,124],[1987,124],[1987,1118],[221,1118]]
+                          shapes:
+                            type: array
+                            items:
+                              properties:
+                                type:
+                                  example: polygon
+                                points:
+                                  example: [[1285,790],[1261,770],[1217,766],[1154,775],...]
+                                area:
+                                  example: 7316.563736122036
+                                length:
+                                  example: 136.155242041223
+                                depth:
+                                  example: 1610.10009765625
+                                color_id:
+                                  example: 3
+                          lengths_ptotal:
+                            example: [42.75, 56.2037037037037, 83.89814814814815,...]
+                          areas_ptotal: 
+                            example: [14, 19.203703703703702, 25.89814814814815, ...]
+                          tapes:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  pixelA:
+                                    example: [45,150]
+                                  pixelB:
+                                    example: [180,65]
+                                  distancia_mm:
+                                    example: 635.9511479475383
+                                  text:
+                                    example: "635.95 mm"
+                  
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Los cambios fueron guardados correctamente.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    example: []
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []
 
   /instalador/quamtum/device/software:
     get:
