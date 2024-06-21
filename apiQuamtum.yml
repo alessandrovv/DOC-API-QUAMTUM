@@ -1618,7 +1618,7 @@ paths:
                     type: object
                     example: []
 
-  /v1/quamtum/web/proyecto/analisis/list/cinta_metrica:
+  /v1/quamtum/web/proyecto/analisis/cinta_metrica:
     post:
       tags: 
         - Analisis
