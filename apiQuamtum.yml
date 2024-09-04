@@ -1467,7 +1467,7 @@ paths:
                     type: integer
                     example: 0
                   datos:
-                    type: array
+                    type: object
                     items:
                       properties:
                         uid:
