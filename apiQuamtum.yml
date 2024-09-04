@@ -1573,7 +1573,7 @@ paths:
     post:
       tags: 
         - Proyecto
-      operationId: saveProyectoQuamtumWeb
+      operationId: deleteProyectoQuamtumWeb
       description: Permite al usuario eliminar un proyecto.
       parameters:
         - in: path
