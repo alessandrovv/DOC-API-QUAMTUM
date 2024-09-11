@@ -1154,6 +1154,82 @@ paths:
                     type: object
                     example: []    
 
+  /v1/quamtum/device/proyecto/save_bin:
+    post:
+      tags: 
+        - Proyecto
+      operationId: saveProyectoBinQuamtumDevice
+      description: Permite al usuario subir el archivo binario generado por la Quamtum Portable a la nube.
+      security:
+        - BearerAuth: []
+        - Cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - proyecto_nombre 
+                - proyecto_fecha
+                - file
+              properties:
+                proyecto_uid:
+                  type: string
+                  example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                proyecto_nombre:
+                  type: string
+                  example: "PROYECTO 1"
+                proyecto_fecha:
+                  type: string
+                  example: "2024-03-23 21:26:44"
+                file:
+                  type: string
+                  format: binary
+                  example: "19-04-2024_06-59-29.qtm"
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      proyecto_uid:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                      files_iud:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+
   /v1/quamtum/device/proyecto/rename:
     post:
       tags: 
@@ -1507,7 +1583,6 @@ paths:
       description: Permite al usuario crear o editar un proyecto.
       security:
         - BearerAuth: []
-        - Cookie: []
       requestBody:
         content:
           application/json:
@@ -1570,7 +1645,7 @@ paths:
                     example: []    
 
   /v1/quamtum/web/proyecto/delete/{proyecto_uid}:
-    post:
+    put:
       tags: 
         - Proyecto
       operationId: deleteProyectoQuamtumWeb
@@ -1629,11 +1704,10 @@ paths:
     post:
       tags: 
         - Proyecto
-      operationId: saveProyectoAnalisiQuamtumWeb
+      operationId: saveProyectoAnalisisQuamtumWeb
       description: Permite al usuario subir los archivos generados por la Quamtum Portable a la nube.
       security:
         - BearerAuth: []
-        - Cookie: []
       requestBody:
         content:
           application/form-data:
@@ -1702,15 +1776,82 @@ paths:
                     type: object
                     example: []    
 
+  /v1/quamtum/web/proyecto/save/analisis_bin:
+    post:
+      tags: 
+        - Proyecto
+      operationId: saveProyectoAnalisisBinQuamtumWeb
+      description: Permite al usuario subir el archivo binario generado por la Quamtum Portable a la nube.
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/form-data:
+            schema:
+              type: object
+              required: 
+                - proyecto_uid
+                - file
+              properties:
+                proyecto_uid:
+                  type: string
+                  example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                file:
+                  type: string
+                  format: binary
+                  example: "19-04-2024_06-59-29.qtm"
+      responses:
+        200:
+          description: Consulta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: OK
+                  mensaje:
+                    type: string
+                    example: Consulta exitosa.
+                  tipo_error:
+                    type: integer
+                    example: 0
+                  datos:
+                    type: object
+                    properties:
+                      proyecto_uid:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+                      files_iud:
+                        example: "4ae00d9b-6c8e-48f4-8ed0-534d02ddbf1c"
+        404:
+          description: "Peticion no ejecutada."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: ERR
+                  mensaje:
+                    type: string
+                    example: No se realizo la acción solicitada.
+                  tipo_error:
+                    type: integer
+                    example: 1
+                  datos:
+                    type: object
+                    example: []    
+  
   /v1/quamtum/web/proyecto/save/analisis_zip:
     post:
       tags: 
         - Proyecto
-      operationId: saveProyectoAnalisiQuamtumWeb
+      operationId: saveProyectoAnalisisZipQuamtumWeb
       description: Permite al usuario subir los archivos generados por la Quamtum Portable a la nube comprimidos en un solo archivo zip.
       security:
         - BearerAuth: []
-        - Cookie: []
       requestBody:
         content:
           application/form-data:
