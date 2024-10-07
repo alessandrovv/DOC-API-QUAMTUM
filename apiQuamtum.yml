@@ -1443,6 +1443,11 @@ paths:
       operationId: listProyectoQuamtumWeb
       description: Permite al usuario obtener un listado de los proyectos subidos desde la Quamtum Portable en la nube, en un rango de fecha.
       parameters:
+        - in: header
+          name: unidadminera_id
+          description: Identificador de la unidad minera seleccionada
+          schema:
+            type: integer
         - in: query
           name: fecha_desde
           description: Fecha de inicio para obtener los datos del listado [yyyy-MM-DD].
